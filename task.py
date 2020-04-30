@@ -1,51 +1,24 @@
-from datetime import date
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from database import engine
+from sqlalchemy.orm import sessionmaker
+
+engine.connect()
+
+Base = declarative_base()
+session = sessionmaker(engine)()
 
 
-class Task:
+class Task(Base):
+    __tablename__ = 'task'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
+    description = Column(String(200))
+    deadline = Column(DateTime, nullable=False)
+    complete = Column(Boolean, default=False)
+    color = Column(String(10), default=None)
 
-    @staticmethod
-    def check_type(value, expected_type):
-        if not isinstance(value, expected_type):
-            raise ValueError(f"Expected type {expected_type}, got {type(value)} instead.")
 
-    def __init__(self, name, description, deadline, complete=False):
-        self.check_type(name, str)
-        self.check_type(description, str)
-        self.check_type(deadline, date)
-        self.check_type(complete, bool)
-        # set incrementing ID in DB and save it to a variable
-        self._name = name
-        self._description = description
-        self._deadline = deadline
-        self.complete = complete
+    # create table in db
+# Task.metadata.create_all(engine)
 
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, name):
-        self.check_type(self, str)
-        self._name = name
-
-    @property
-    def description(self):
-        return self._description
-
-    @description.setter
-    def description(self, description):
-        self.check_type(description, str)
-        self._description = description
-
-    @property
-    def deadline(self):
-        return self._deadline
-
-    @deadline.setter
-    def deadline(self, deadline):
-        self.check_type(deadline, date)
-        self._deadline = deadline
-
-    def to_dict(self):
-        return {"name": self._name, "description": self._description, "deadline": self._deadline,
-                "complete": self.complete}
