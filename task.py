@@ -25,8 +25,26 @@ class Task:
 
     @name.setter
     def name(self, name):
-        self.check_type(self, name)
+        self.check_type(self, str)
         self._name = name
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        self.check_type(description, str)
+        self._description = description
+
+    @property
+    def deadline(self):
+        return self._deadline
+
+    @deadline.setter
+    def deadline(self, deadline):
+        self.check_type(deadline, date)
+        self._deadline = deadline
 
     def to_dict(self):
         return {"name": self._name, "description": self._description, "deadline": self._description,
