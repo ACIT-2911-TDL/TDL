@@ -44,13 +44,13 @@ def done_tasks():
 @app.route("/newTask", methods=["POST"])
 def add_task():
     data = request.json
-    data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%d').date()
+    data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
 
     try:
         task = Task(name=data["name"], description=data["description"], deadline=data["deadline"])
         session.add(task)
         session.commit()
-        return make_response("", 204)
+        return make_response(" ", 204)
     except ValueError as e:
         message = str(e)
         return make_response(message, 400)
