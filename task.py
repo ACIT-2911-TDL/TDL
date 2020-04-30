@@ -47,5 +47,5 @@ class Task:
         self._deadline = deadline
 
     def to_dict(self):
-        return {"name": self._name, "description": self._description, "deadline": self._description,
+        return {"name": self._name, "description": self._description, "deadline": self._deadline,
                 "complete": self.complete}
