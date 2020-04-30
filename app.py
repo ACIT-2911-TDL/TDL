@@ -1,8 +1,10 @@
 from flask import Flask, make_response, jsonify
+from flask_cors import CORS
 from task import Task
 from datetime import date
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/')
