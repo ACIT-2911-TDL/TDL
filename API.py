@@ -15,30 +15,30 @@ session = sessionmaker(engine)()
 
 def all_tasks():
     tasks = session.query(Task).filter_by(complete=False)
-    all_tasks = []
+    task_list = []
     for x in tasks:
         x = x.__dict__
         x.pop('_sa_instance_state')
-        all_tasks.append(x)
-    return all_tasks
+        task_list.append(x)
+    return task_list
 
 
 @app.route('/toDoTasks', methods=["GET"])
 def to_do_tasks():
-    to_do_tasks = []
+    task_list = []
     for task in all_tasks():
         if not task['complete']:
-            to_do_tasks.append(task)
-    return jsonify(to_do_tasks)
+            task_list.append(task)
+    return jsonify(task_list)
 
 
 @app.route('/doneTasks', methods=["GET"])
 def done_tasks():
-    done_tasks = []
+    task_list = []
     for task in all_tasks():
         if task['complete']:
-            done_tasks.append(task)
-    return jsonify(done_tasks)
+            task_list.append(task)
+    return jsonify(task_list)
 
 
 @app.route("/newTask", methods=["POST"])
