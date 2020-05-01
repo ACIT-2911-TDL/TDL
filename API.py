@@ -6,7 +6,6 @@ from datetime import datetime
 from flask_cors import CORS
 
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -54,6 +53,14 @@ def add_task():
     except ValueError as e:
         message = str(e)
         return make_response(message, 400)
+
+
+@app.route("/deleteTask", methods=["DELETE"])
+def delete_task():
+    task_id = request.json["task_id"]
+    task_to_delete = session.query(Task).filter(Task.id == task_id)
+    session.delete(task_to_delete)
+    session.commit()
 
 
 # @app.route("/newTask", methods=["PUT"])
