@@ -3,11 +3,9 @@ from task import Task
 from database import engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-from flask_cors import CORS
 
 
 app = Flask(__name__)
-CORS(app)
 
 session = sessionmaker(engine)()
 
