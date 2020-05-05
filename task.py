@@ -16,7 +16,9 @@ class Task(Base):
     description = Column(String(200))
     deadline = Column(DateTime, nullable=False)
     complete = Column(Boolean, default=False)
+    priority = Column(Integer)
     color = Column(String(10), default=None)
+    __table_args__ = (1 <= priority <= 5, 'priority_in_range')
 
 
 # create table in db
