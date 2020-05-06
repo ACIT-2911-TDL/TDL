@@ -43,9 +43,8 @@ def done_tasks():
 @app.route("/newTask", methods=["POST"])
 def add_task():
     data = request.json
-    data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
-
     try:
+        data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
         task = Task(name=data["name"], description=data["description"], deadline=data["deadline"])
         session.add(task)
         session.commit()
@@ -72,6 +71,7 @@ def update_task():
     session.add(task)
     session.commit()
     return make_response(" ", 204)
+
 
 
 
