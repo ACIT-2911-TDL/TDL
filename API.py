@@ -4,12 +4,22 @@ from database import engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from flask_cors import CORS
+from flask_login import LoginManager
+from user import User
 
 
 app = Flask(__name__)
+app.secret_key = '4z6S8moLNq2YFFUj'
 CORS(app)
 
 session = sessionmaker(engine)()
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return session.query(User).filter(User.user_id == user_id)
 
 
 def all_tasks():
@@ -52,6 +62,20 @@ def add_task():
     except ValueError as e:
         message = str(e)
         return make_response(message, 400)
+    
+    
+@app.route("/CreateUser", methods=["POST"])
+def add_user():
+    data = request.json
+    try:
+        user = User(username=data["username"], password=["password"])
+        session.add(user)
+        session.commit()
+        return make_response("", 204)
+    except ValueError as e:
+        message = str(e)
+        print(message)
+        return make_response(message, 400)
 
 
 @app.route("/deleteTask", methods=["POST"])
@@ -71,9 +95,6 @@ def update_task():
     session.add(task)
     session.commit()
     return make_response(" ", 204)
-
-
-
 
 
 if __name__ == '__main__':
