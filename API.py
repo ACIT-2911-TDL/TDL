@@ -13,7 +13,7 @@ session = sessionmaker(engine)()
 
 
 def all_tasks():
-    tasks = session.query(Task).filter_by(complete=False)
+    tasks = session.query(Task).all()
     task_list = []
     for x in tasks:
         x = x.__dict__
@@ -43,9 +43,8 @@ def done_tasks():
 @app.route("/newTask", methods=["POST"])
 def add_task():
     data = request.json
-    data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
-
     try:
+        data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
         task = Task(name=data["name"], description=data["description"], deadline=data["deadline"])
         session.add(task)
         session.commit()
@@ -55,26 +54,25 @@ def add_task():
         return make_response(message, 400)
 
 
-@app.route("/deleteTask", methods=["DELETE"])
+@app.route("/deleteTask", methods=["POST"])
 def delete_task():
-    task_id = request.json["task_id"]
-    task_to_delete = session.query(Task).filter(Task.id == task_id)
+    task_id = request.json["id"]
+    task_to_delete = session.query(Task).filter(Task.id == task_id).first()
     session.delete(task_to_delete)
     session.commit()
+    return make_response(" ", 204)
 
 
-# @app.route("/newTask", methods=["PUT"])
-# def update_task():
-#     data = request.json
-#     try:
-#         tasks = session.query(Task).filter(Task.id == data["id"])
-#         for t in tasks:
-#
-#             for item in data_list:
-#                 if item:
-#                     item.is_vaild = 0
-#                     self.session.add(item)  # 加入
-#             self.session.commit()
+@app.route("/completeTask", methods=["POST"])
+def update_task():
+    task_id = request.json["id"]
+    task = session.query(Task).filter(Task.id == task_id).first()
+    task.complete = True
+    session.add(task)
+    session.commit()
+    return make_response(" ", 204)
+
+
 
 
 
