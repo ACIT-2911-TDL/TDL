@@ -68,7 +68,7 @@ def add_task():
 def add_user():
     data = request.json
     try:
-        user = User(username=data["username"], password=["password"])
+        user = User(username=data["username"], password=data["password"])
         session.add(user)
         session.commit()
         return make_response("", 204)
