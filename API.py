@@ -4,12 +4,23 @@ from database import engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from flask_cors import CORS
+from flask_login import LoginManager
+from user import User
+from sqlalchemy.exc import IntegrityError
 
 
 app = Flask(__name__)
+app.secret_key = '4z6S8moLNq2YFFUj'
 CORS(app)
 
 session = sessionmaker(engine)()
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return session.query(User).filter(User.user_id == user_id)
 
 
 def all_tasks():
@@ -43,16 +54,37 @@ def done_tasks():
 @app.route("/newTask", methods=["POST"])
 def add_task():
     data = request.json
-    data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
-
     try:
+        data["deadline"] = datetime.strptime(data["deadline"], '%Y-%m-%dT%H:%M')
         task = Task(name=data["name"], description=data["description"], deadline=data["deadline"])
         session.add(task)
         session.commit()
         return make_response(" ", 204)
     except ValueError as e:
         message = str(e)
+        session.rollback()
         return make_response(message, 400)
+    
+    
+@app.route("/CreateUser", methods=["POST"])
+def add_user():
+    data = request.json
+    try:
+        user = User(username=data["username"], password=data["password"],
+                    firstName=data["firstName"], lastName=data["lastName"], email=data["email"])
+        session.add(user)
+        session.commit()
+        return make_response("", 204)
+    except ValueError as e:
+        message = str(e)
+        print(message)
+        session.rollback()
+        return make_response(message, 400)
+    except IntegrityError:
+        message = "Username is already in use, please use another one."
+        session.rollback()
+        return make_response(message, 400)
+
 
 
 @app.route("/deleteTask", methods=["POST"])
@@ -73,7 +105,14 @@ def update_task():
     session.commit()
     return make_response(" ", 204)
 
-
+@app.route("/markTask", methods=["POST"])
+def mark_task():
+    task_id = request.json["id"]
+    task = session.query(Task).filter(Task.id == task_id).first()
+    task.color = request.json["color"]
+    session.add(task)
+    session.commit()
+    return make_response(" ", 204)
 
 
 if __name__ == '__main__':

@@ -19,6 +19,9 @@ class Task(Base):
     color = Column(String(10), default=None)
 
 
+# Drop table in db
+# Task.__table__.drop(engine)
 # create table in db
 # Task.metadata.create_all(engine)
+
 
