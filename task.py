@@ -20,6 +20,8 @@ class Task(Base):
 
 
 # Drop table in db
-Task.__table__.drop(engine)
+# Task.__table__.drop(engine)
 # create table in db
-Task.metadata.create_all(engine)
+# Task.metadata.create_all(engine)
+
+
