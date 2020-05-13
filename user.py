@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import PasswordType, force_auto_coercion
 from database import engine
 from sqlalchemy.orm import sessionmaker
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 engine.connect()
@@ -19,9 +20,13 @@ class User(UserMixin, Base):
     email = Column(String(20), nullable=False)
     firstName = Column(String(20), nullable=False)
     lastName = Column(String(20), nullable=False)
-    password = Column(PasswordType(
-        schemes=['pbkdf2_sha512']
-    ), nullable=False)
+    password = Column(String(128))
+
+    def set_password(self, new_password):
+        self.password = generate_password_hash(new_password)
+
+    def check_password(self, password_to_check):
+        return check_password_hash(self.password, password_to_check)
 
 
 # Drop table in db
