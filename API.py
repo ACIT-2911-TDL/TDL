@@ -83,8 +83,9 @@ def add_user():
                       "with 1 upper letter, 1 lower letter and 1 number."
             return make_response(message, 400)
 
-        user = User(username=data["username"], password=data["password"],
-                    firstName=data["firstName"], lastName=data["lastName"], email=data["email"])
+        user = User(username=data["username"], firstName=data["firstName"],
+                    lastName=data["lastName"], email=data["email"])
+        user.set_password(data["password"])
         session.add(user)
         session.commit()
         return make_response("", 204)
