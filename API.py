@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from user import User
 from sqlalchemy.exc import IntegrityError
+import re
 
 
 app = Flask(__name__)
@@ -69,7 +70,19 @@ def add_task():
 @app.route("/CreateUser", methods=["POST"])
 def add_user():
     data = request.json
+    email_validation = '[0-9a-zA-Z_]{1,19}@[0-9a-zA-Z]{1,13}\.[a-z]{1,3}$'
     try:
+        if not re.match(email_validation, data['email']):
+            message = "Invalid Email format."
+            return make_response(message, 400)
+        elif len(data['password'])<8 or \
+                not any(char.isdigit() for char in data['password']) or \
+                not any(char.isupper() for char in data['password']) or \
+                not any(char.islower() for char in data['password']):
+            message = "Password must contain at least 8 letters, " \
+                      "with 1 upper letter, 1 lower letter and 1 number."
+            return make_response(message, 400)
+
         user = User(username=data["username"], password=data["password"],
                     firstName=data["firstName"], lastName=data["lastName"], email=data["email"])
         session.add(user)
